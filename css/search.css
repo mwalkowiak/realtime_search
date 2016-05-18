@@ -1,0 +1,112 @@
+* {
+    padding:0;
+    margin:0;
+}
+
+html{
+    font:14px normal Arial, sans-serif;
+    color:#626771;
+    background-color:#fff;
+}
+
+body{
+    padding:60px;
+    text-align: center;
+}
+
+input[type=text]{
+    text-align: center;
+    font: inherit;
+    border: 3px solid #45BB5F;
+    padding: 13px 12px;
+    font-size: 15px;
+    box-shadow: 0 1px 1px #DDD;
+    width: 100%;
+    outline: none;
+    display: block;
+    color: #7B8585;
+    margin: 0 auto 20px;
+}
+
+select{
+  text-align: center;
+  font: inherit;
+  border: 2px solid #9A9693;
+  padding: 13px 12px;
+  font-size: 15px;
+  box-shadow: 0 1px 1px #DDD;
+  width: 150px;
+  outline: none;
+  display: block;
+  color: #7B8585;
+  margin-left: 40px;
+  height: 50px;
+}
+
+
+ul{
+    list-style: none;
+    display: inline-block;
+    width: 100%;
+    text-align: left;
+}
+
+ul li{
+    display: block;
+    padding: 15px 20px;
+    background-color: #F8F8F8;
+    color: #7B8585;
+    margin-bottom: 3px;
+    position: relative;
+
+    transition: 0.3s;
+}
+
+ul li a{
+    font-size: 12px;
+    line-height: 16px;
+    color: #969d9d;
+}
+
+ul li:hover{
+    background-color:#d8f2f1;
+}
+
+ul li div span.tags{
+  display: inline;
+  float: right;
+  border: 2px solid orange;
+  padding: 5px;
+  margin-right: 5px;
+  margin-top: -22px;
+}
+
+ul li div span.tags:hover{
+  background-color:orange;
+  cursor: pointer;
+}
+
+ul li div span.tag-selected{
+  background-color:orange;
+  cursor: pointer;
+}
+
+ul li span.result-title{
+  display: inline;
+  margin-right: 5px;
+}
+
+div .search-input{
+  width: 60%;
+  float: left;
+}
+
+div .search-dropdown{
+  width: 30%;
+  float: left;
+  margin-left: 5px;
+}
+
+div .search-elem-container{
+  width: 100%;
+}

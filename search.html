@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="build/react.js"></script>
+    <script src="build/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/search.css"/>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="text/babel">
+
+      var RealtimeSearch = React.createClass({
+
+        getInitialState: function(){
+            return {
+              searchString: '',
+              searchResults: [],
+              selectedTags: [],
+              sitemap: 'sales'
+            };
+        },
+
+        handleSitemapChange: function(e) {
+          if (this.state.searchString === '') {
+            return false;
+          }
+
+          this.state.sitemap = e.target.value;
+
+          this.handleChange(this);
+        },
+
+        handleChange: function(e){
+
+            if (e.target !== undefined) {
+              this.setState({searchString: e.target.value});
+            }
+
+            var ajaxData = {
+              'sitemap_token': '123456789',
+              'sitemap': this.state.sitemap,
+              'term': encodeURIComponent(this.state.searchString).trim().toLowerCase()
+            };
+
+            var selectedTags = this.state.selectedTags;
+
+            if (selectedTags.length > 0) {
+              ajaxData.tags = selectedTags;
+            }
+
+            $.ajax({
+                  url: "https://demo1.kaleosoftware.com/v4/search.json",
+                  data: ajaxData,
+                  success: function(results){
+                    this.setState({searchResults: results});
+                  }.bind(this),
+                  // very basic error handling here, right now when you switch sitemap in dropdown you will get 401, which is a good use for that
+                  error: function(err){
+                    this.setState({searchResults: []});
+                  }.bind(this)
+            });
+
+        },
+
+        tagExists: function(tagName) {
+          return ($.inArray(this.unify(tagName), this.state.selectedTags) >= 0) ? true : false;
+        },
+
+        unify: function(tagName) {
+          return tagName.trim().toLowerCase();
+        },
+
+        handleTagSelect: function(tagName) {
+          var selectedTags = this.state.selectedTags;
+
+          if (this.tagExists(tagName)) {
+            // We didn't have to introduce "underscore" here but I like a short solution for removing element from array
+            this.state.selectedTags = _.without(selectedTags, this.unify(tagName));
+          } else {
+            this.state.selectedTags.push(this.unify(tagName));
+          }
+
+          this.handleChange(this);
+        },
+
+        renderTags: function(tags) {
+          var tagsHtml = tags.map(function(tag){
+            return (
+              <span className={this.tagExists(tag.name) ? 'tags tag-selected' : 'tags'} onClick={this.handleTagSelect.bind(this, tag.name)}>{tag.name}</span>
+            );
+          }.bind(this));
+
+          return (
+            <div>{tagsHtml}</div>
+          );
+        },
+
+        render: function() {
+
+                let searchString = this.state.searchString;
+                let searchResults = this.state.searchResults;
+                let inputSearchField =
+                  <div className="search-elem-container">
+                    <div className="search-input">
+                      <input type="text" value={this.state.searchString} onChange={this.handleChange} placeholder="Search for Kaleo content here" />
+                    </div>
+                    <div className="search-dropdown">
+                      <select onChange={this.handleSitemapChange}>
+                        <option value="sales">Sales</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="accounting">Accounting</option>
+                      </select>
+                    </div>
+                  </div>
+                  ;
+
+                if (searchString !== '' && 'collection' in searchResults && searchResults.collection.length > 0) {
+
+                  return (
+                          <div>
+                          {inputSearchField}
+                          <ul>
+                              {
+                                searchResults.collection.map(function(sr){
+                                  return (
+                                      <li>
+                                          <span className="result-title">{sr.title}</span>
+                                          <span>
+                                            <a href={sr.url}>{sr.url}</a>
+                                          </span>
+                                          {this.renderTags(sr.tags)}
+                                      </li>
+                                    );
+                                }.bind(this))
+                              }
+                          </ul>
+                      </div>
+                    );
+                } else {
+                  return <div>
+                    {inputSearchField}
+                  </div>;
+                }
+        }
+      });
+
+      ReactDOM.render(
+        <RealtimeSearch />,
+        document.getElementById('container')
+      );
+    </script>
+  </body>
+</html>
